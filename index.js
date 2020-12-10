@@ -17,9 +17,11 @@ const authentication = (config) => {
     github: {
       icon: '<i class="fab fa-github"></i>',
       label: "GitHub",
+      parameters: { scope: ["user:email"] },
       strategy: new GitHubStrategy(
         params,
         function (accessToken, refreshToken, profile, cb) {
+          db.sql_log(profile);
           let email = "";
           if (profile._json && profile._json.email) email = profile._json.email;
           else if (profile.emails && profile.emails.length)
