@@ -20,9 +20,12 @@ const authentication = (config) => {
       strategy: new GitHubStrategy(
         params,
         function (accessToken, refreshToken, profile, cb) {
-          db.sql_log(profile);
+          let email = "";
+          if (profile._json && profile._json.email) email = profile._json.email;
+          else if (profile.emails && profile.emails.length)
+            email = profile.emails[0].value;
           User.findOrCreateByAttribute("githubId", profile.id, {
-            email: "",
+            email,
           }).then((u) => {
             return cb(null, u.session_object);
           });
