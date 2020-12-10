@@ -9,8 +9,8 @@ const { getState } = require("@saltcorn/data/db/state");
 const authentication = (config) => {
   const cfg_base_url = getState().getConfig("base_url");
   const params = {
-    consumerKey: config.clientID || "nokey",
-    consumerSecret: config.clientSecret || "nosecret",
+    clientID: config.clientID || "nokey",
+    clientSecret: config.clientSecret || "nosecret",
     callbackURL: `${cfg_base_url}auth/callback/github`,
   };
   return {
