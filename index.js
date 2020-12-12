@@ -11,7 +11,7 @@ const authentication = (config) => {
   const params = {
     clientID: config.clientID || "nokey",
     clientSecret: config.clientSecret || "nosecret",
-    callbackURL: `${cfg_base_url}auth/callback/github`,
+    callbackURL: `${addSlash(cfg_base_url)}auth/callback/github`,
   };
   return {
     github: {
@@ -36,14 +36,28 @@ const authentication = (config) => {
   };
 };
 
-const configuration_workflow = () =>
-  new Workflow({
+const addSlash = (s) => (s[s.length - 1] === "/" ? s : s + "/");
+
+const configuration_workflow = () => {
+  const cfg_base_url = getState().getConfig("base_url"),
+    base_url = addSlash(cfg_base_url || "http://base_url");
+  const blurb = [
+    !cfg_base_url
+      ? "You should set the 'Base URL' configration property. "
+      : "",
+    `Create a new OAuth App at the <a href="https://github.com/settings/developers">GitHub Developer Settings</a>
+(you should be logged in to GitHub to access this link). 
+you should obtain the API key and secret to enter below
+and set the Authorization callback URL to ${base_url}auth/callback/github.`,
+  ];
+  return new Workflow({
     steps: [
       {
         name: "API keys",
         form: () =>
           new Form({
             labelCols: 3,
+            blurb,
             fields: [
               {
                 name: "clientID",
@@ -62,7 +76,7 @@ const configuration_workflow = () =>
       },
     ],
   });
-
+};
 module.exports = {
   sc_plugin_api_version: 1,
   authentication,
